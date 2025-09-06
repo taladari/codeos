@@ -3,7 +3,7 @@ import { Command } from 'commander';
 import { config as dotenvConfig } from 'dotenv'
 import path from 'node:path'
 import { loadConfig, analyzeRepo, writeAnalyzeReport } from 'codeos-core';
-import { initProject, runWorkflow, createBlueprint, setLogLevel, logger, findProjectRoot, selectProvider } from '../index.js';
+import { initProject, runWorkflow, createBlueprint, setLogLevel, logger, findProjectRoot, selectProvider, resumeWorkflow, listWorkflowRuns, retryWorkflowFromStep, inspectWorkflowRun } from '../index.js';
 
 const program = new Command();
 program
@@ -48,5 +48,39 @@ program.command('analyze').description('Detect repo stack and write .codeos/repo
     const out = await writeAnalyzeReport(root, report);
     logger.info(`🧭 Analyzer wrote ${out}`)
   })
+
+program.command('resume').description('Resume a failed workflow run')
+  .argument('<runId>', 'Run ID to resume')
+  .action(async (runId) => {
+    const root = await findProjectRoot();
+    dotenvConfig({ path: path.join(root, '.env') })
+    const cfg = await loadConfig(root);
+    const provider = await selectProvider(cfg)
+    await resumeWorkflow(runId, root, provider);
+  });
+
+program.command('runs').description('List workflow runs')
+  .action(async () => {
+    const root = await findProjectRoot();
+    await listWorkflowRuns(root);
+  });
+
+program.command('retry').description('Retry workflow from a specific step')
+  .argument('<runId>', 'Run ID to retry')
+  .argument('<stepIndex>', 'Step index to retry from (0-based)', (val) => parseInt(val, 10))
+  .action(async (runId, stepIndex) => {
+    const root = await findProjectRoot();
+    dotenvConfig({ path: path.join(root, '.env') })
+    const cfg = await loadConfig(root);
+    const provider = await selectProvider(cfg)
+    await retryWorkflowFromStep(runId, stepIndex, root, provider);
+  });
+
+program.command('inspect').description('Inspect workflow run details')
+  .argument('<runId>', 'Run ID to inspect')
+  .action(async (runId) => {
+    const root = await findProjectRoot();
+    await inspectWorkflowRun(runId, root);
+  });
 
 program.parseAsync(process.argv);
