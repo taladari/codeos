@@ -1,0 +1,25 @@
+node_modules
+packages/*/node_modules
+
+# Build outputs
+dist
+packages/*/dist
+
+# TypeScript
+**/*.tsbuildinfo
+
+# Logs & OS files
+*.log
+.DS_Store
+
+# Env files
+.env
+.env.*.local
+
+# CodeOS (framework repo: ignore user-like artifacts)
+.codeos/
+codeos.yml
+
+# Repo-internal docs
+internal/
+PROBLEM.md

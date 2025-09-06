@@ -1,0 +1,121 @@
+[
+  {
+    "title": "EPIC A \u2014 CLI & Config: As a dev, I can run `codeos --help` to see available commands",
+    "body": "As a dev, I can run `codeos --help` to see available commands.",
+    "labels": [
+      "epic:mvp"
+    ]
+  },
+  {
+    "title": "EPIC A \u2014 CLI & Config: As a dev, I can run `codeos init` to scaffold `.codeos/` safely",
+    "body": "As a dev, I can run `codeos init` to scaffold `.codeos/` safely.",
+    "labels": [
+      "epic:mvp"
+    ]
+  },
+  {
+    "title": "EPIC A \u2014 CLI & Config: As a dev, I can define settings in `codeos.yml` with validation & defaults",
+    "body": "As a dev, I can define settings in `codeos.yml` with validation & defaults.",
+    "labels": [
+      "epic:mvp"
+    ]
+  },
+  {
+    "title": "EPIC A \u2014 CLI & Config: As a dev, I can create a blueprint with `codeos blueprint \"Title\"`",
+    "body": "As a dev, I can create a blueprint with `codeos blueprint \"Title\"`.",
+    "labels": [
+      "epic:mvp"
+    ]
+  },
+  {
+    "title": "EPIC B \u2014 Providers & Repo Analyzer: As a dev, I can view detected language, package manager, and test runner",
+    "body": "As a dev, I can view detected language, package manager, and test runner.",
+    "labels": [
+      "epic:mvp"
+    ]
+  },
+  {
+    "title": "EPIC B \u2014 Providers & Repo Analyzer: As a dev, CodeOS knows how to run lint/type/test for my repo",
+    "body": "As a dev, CodeOS knows how to run lint/type/test for my repo.",
+    "labels": [
+      "epic:mvp"
+    ]
+  },
+  {
+    "title": "EPIC B \u2014 Providers & Repo Analyzer: As a dev, I can switch providers (Claude/OpenAI) via config",
+    "body": "As a dev, I can switch providers (Claude/OpenAI) via config.",
+    "labels": [
+      "epic:mvp"
+    ]
+  },
+  {
+    "title": "EPIC C \u2014 Roles (Planner, Builder, Verifier, Reviewer): As a dev, I can generate a Plan from a ticket/idea",
+    "body": "As a dev, I can generate a Plan from a ticket/idea.",
+    "labels": [
+      "epic:mvp"
+    ]
+  },
+  {
+    "title": "EPIC C \u2014 Roles (Planner, Builder, Verifier, Reviewer): As a dev, I can ask CodeOS to propose **minimal diffs** and tests",
+    "body": "As a dev, I can ask CodeOS to propose **minimal diffs** and tests.",
+    "labels": [
+      "epic:mvp"
+    ]
+  },
+  {
+    "title": "EPIC C \u2014 Roles (Planner, Builder, Verifier, Reviewer): As a dev, I can see verification results (lint, typecheck, tests)",
+    "body": "As a dev, I can see verification results (lint, typecheck, tests).",
+    "labels": [
+      "epic:mvp"
+    ]
+  },
+  {
+    "title": "EPIC C \u2014 Roles (Planner, Builder, Verifier, Reviewer): As a dev, I receive a PR summary with risks and a checklist",
+    "body": "As a dev, I receive a PR summary with risks and a checklist.",
+    "labels": [
+      "epic:mvp"
+    ]
+  },
+  {
+    "title": "EPIC D \u2014 Workflow Engine: As a dev, I can run `codeos run build` and see step\u2011by\u2011step progress",
+    "body": "As a dev, I can run `codeos run build` and see step\u2011by\u2011step progress.",
+    "labels": [
+      "epic:mvp"
+    ]
+  },
+  {
+    "title": "EPIC D \u2014 Workflow Engine: As a dev, I can resume a failed run without losing artifacts",
+    "body": "As a dev, I can resume a failed run without losing artifacts.",
+    "labels": [
+      "epic:mvp"
+    ]
+  },
+  {
+    "title": "EPIC E \u2014 GitHub Integration: As a dev, I can trigger a PR with branch, commits, and summary",
+    "body": "As a dev, I can trigger a PR with branch, commits, and summary.",
+    "labels": [
+      "epic:mvp"
+    ]
+  },
+  {
+    "title": "EPIC E \u2014 GitHub Integration: As a reviewer, I can see gate statuses and a concise change summary in the PR",
+    "body": "As a reviewer, I can see gate statuses and a concise change summary in the PR.",
+    "labels": [
+      "epic:mvp"
+    ]
+  },
+  {
+    "title": "EPIC F \u2014 Verification Gates: As a dev, I want CodeOS to fail fast on formatting, lint, typing, or tests",
+    "body": "As a dev, I want CodeOS to fail fast on formatting, lint, typing, or tests.",
+    "labels": [
+      "epic:mvp"
+    ]
+  },
+  {
+    "title": "EPIC F \u2014 Verification Gates: As a team, I want consistent, machine\u2011readable reports",
+    "body": "As a team, I want consistent, machine\u2011readable reports.",
+    "labels": [
+      "epic:mvp"
+    ]
+  }
+]

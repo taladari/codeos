@@ -1,0 +1,18 @@
+title,body,labels
+"EPIC A — CLI & Config: As a dev, I can run `codeos --help` to see available commands","As a dev, I can run `codeos --help` to see available commands.",epic:mvp
+"EPIC A — CLI & Config: As a dev, I can run `codeos init` to scaffold `.codeos/` safely","As a dev, I can run `codeos init` to scaffold `.codeos/` safely.",epic:mvp
+"EPIC A — CLI & Config: As a dev, I can define settings in `codeos.yml` with validation & defaults","As a dev, I can define settings in `codeos.yml` with validation & defaults.",epic:mvp
+"EPIC A — CLI & Config: As a dev, I can create a blueprint with `codeos blueprint ""Title""`","As a dev, I can create a blueprint with `codeos blueprint ""Title""`.",epic:mvp
+"EPIC B — Providers & Repo Analyzer: As a dev, I can view detected language, package manager, and test runner","As a dev, I can view detected language, package manager, and test runner.",epic:mvp
+"EPIC B — Providers & Repo Analyzer: As a dev, CodeOS knows how to run lint/type/test for my repo","As a dev, CodeOS knows how to run lint/type/test for my repo.",epic:mvp
+"EPIC B — Providers & Repo Analyzer: As a dev, I can switch providers (Claude/OpenAI) via config","As a dev, I can switch providers (Claude/OpenAI) via config.",epic:mvp
+"EPIC C — Roles (Planner, Builder, Verifier, Reviewer): As a dev, I can generate a Plan from a ticket/idea","As a dev, I can generate a Plan from a ticket/idea.",epic:mvp
+"EPIC C — Roles (Planner, Builder, Verifier, Reviewer): As a dev, I can ask CodeOS to propose **minimal diffs** and tests","As a dev, I can ask CodeOS to propose **minimal diffs** and tests.",epic:mvp
+"EPIC C — Roles (Planner, Builder, Verifier, Reviewer): As a dev, I can see verification results (lint, typecheck, tests)","As a dev, I can see verification results (lint, typecheck, tests).",epic:mvp
+"EPIC C — Roles (Planner, Builder, Verifier, Reviewer): As a dev, I receive a PR summary with risks and a checklist","As a dev, I receive a PR summary with risks and a checklist.",epic:mvp
+"EPIC D — Workflow Engine: As a dev, I can run `codeos run build` and see step‑by‑step progress","As a dev, I can run `codeos run build` and see step‑by‑step progress.",epic:mvp
+"EPIC D — Workflow Engine: As a dev, I can resume a failed run without losing artifacts","As a dev, I can resume a failed run without losing artifacts.",epic:mvp
+"EPIC E — GitHub Integration: As a dev, I can trigger a PR with branch, commits, and summary","As a dev, I can trigger a PR with branch, commits, and summary.",epic:mvp
+"EPIC E — GitHub Integration: As a reviewer, I can see gate statuses and a concise change summary in the PR","As a reviewer, I can see gate statuses and a concise change summary in the PR.",epic:mvp
+"EPIC F — Verification Gates: As a dev, I want CodeOS to fail fast on formatting, lint, typing, or tests","As a dev, I want CodeOS to fail fast on formatting, lint, typing, or tests.",epic:mvp
+"EPIC F — Verification Gates: As a team, I want consistent, machine‑readable reports","As a team, I want consistent, machine‑readable reports.",epic:mvp

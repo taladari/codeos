@@ -1,0 +1,26 @@
+{
+  "name": "codeos-cli",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "codeos": "./dist/bin/codeos.js"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "node --loader ts-node/esm src/bin/codeos.ts",
+    "lint": "eslint .",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "commander": "^11.1.0",
+    "yaml": "^2.4.5",
+    "codeos-core": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "ts-node": "^10.9.2",
+    "eslint": "^9.0.0",
+    "@types/node": "^20.11.0",
+    "vitest": "^1.6.0"
+  }
+}
