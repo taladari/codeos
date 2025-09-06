@@ -14,7 +14,9 @@
   "dependencies": {
     "commander": "^11.1.0",
     "yaml": "^2.4.5",
-    "codeos-core": "workspace:*"
+    "codeos-core": "workspace:*",
+    "codeos-providers": "workspace:*",
+    "dotenv": "^16.4.5"
   },
   "devDependencies": {
     "typescript": "^5.4.0",

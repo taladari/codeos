@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
+import { config as dotenvConfig } from 'dotenv'
+import path from 'node:path'
 import { loadConfig, analyzeRepo, writeAnalyzeReport } from 'codeos-core';
-import { initProject, runWorkflow, createBlueprint, setLogLevel, logger, findProjectRoot } from '../index.js';
+import { initProject, runWorkflow, createBlueprint, setLogLevel, logger, findProjectRoot, selectProvider } from '../index.js';
 
 const program = new Command();
 program
@@ -32,8 +34,11 @@ program.command('blueprint').description('Create a new blueprint')
 program.command('run').description('Run a workflow')
   .argument('<name>', 'Workflow name, e.g., build')
   .action(async (name) => {
-    const cfg = await loadConfig();
-    await runWorkflow(name, cfg);
+    const root = await findProjectRoot();
+    dotenvConfig({ path: path.join(root, '.env') })
+    const cfg = await loadConfig(root);
+    const provider = await selectProvider(cfg)
+    await runWorkflow(name, cfg, root, provider);
   });
 
 program.command('analyze').description('Detect repo stack and write .codeos/reports/analyze.json')

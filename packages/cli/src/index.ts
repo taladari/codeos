@@ -1,5 +1,6 @@
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
+import { runPlanner, runBuilder, runVerifier, runReviewer, CodeOSConfig } from 'codeos-core'
 
 type LogLevel = 'quiet'|'normal'|'verbose'
 let CURRENT_LEVEL: LogLevel = 'normal'
@@ -97,13 +98,30 @@ export async function createBlueprint(title: string, cwd?: string): Promise<stri
   return path.relative(root, filePath)
 }
 
-export async function runWorkflow(name: string, _cfg: any, cwd?: string): Promise<void> {
+export async function runWorkflow(name: string, _cfg: any, cwd?: string, provider?: { name: string }): Promise<void> {
   const root = cwd ?? await findProjectRoot()
   const runRoot = path.join(root, '.codeos', 'run', new Date().toISOString().replace(/[:.]/g, '-'))
   await fs.mkdir(runRoot, { recursive: true })
   await fs.writeFile(path.join(runRoot, 'meta.json'), JSON.stringify({ workflow: name }, null, 2))
   // TODO: planner → builder → verifier → reviewer
   logger.info(`running workflow: ${name}`)
+  const plan = await runPlanner(root, provider as any)
+  logger.debug(`Plan at ${plan.planPath}`)
+  const build = await runBuilder(root, provider as any)
+  logger.debug(`Patches: ${build.patches.length}`)
+  const verify = await runVerifier(root, build.patches)
+  logger.debug(`Reports: ${verify.reports.map(r=>r.path).join(', ')}`)
+  const review = await runReviewer(root)
+  logger.info(`Review summary at ${review.reviewPath}`)
+}
+
+export async function selectProvider(cfg: CodeOSConfig): Promise<{ name: string, generate: (msgs: any[], opts?: any)=>Promise<{text:string}> } | undefined> {
+  const llm = cfg.providers?.llm ?? 'openai'
+  if (llm === 'openai') {
+    const { OpenAIDriver } = await import('codeos-providers')
+    return new OpenAIDriver() as any
+  }
+  return { name: llm, generate: async () => ({ text: '' }) }
 }
 
 async function fileExists(p: string): Promise<boolean> {

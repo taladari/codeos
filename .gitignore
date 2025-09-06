@@ -23,3 +23,5 @@ codeos.yml
 # Repo-internal docs
 internal/
 PROBLEM.md
+
+.env

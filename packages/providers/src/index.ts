@@ -37,7 +37,21 @@ export class ClaudeDriver implements LLMDriver {
 
 export class OpenAIDriver implements LLMDriver {
   name = 'openai';
-  async generate(_messages: LLMMessage[], opts?: {maxTokens?: number, timeoutMs?: number, retries?: number}): Promise<LLMResponse> {
-    return withRetries(async () => ({ text: '[stubbed-openai-response]' }), opts)
+  async generate(messages: LLMMessage[], opts?: {maxTokens?: number, timeoutMs?: number, retries?: number}): Promise<LLMResponse> {
+    const apiKey = process.env.OPENAI_API_KEY
+    if (!apiKey) return withRetries(async () => ({ text: '[stubbed-openai-response]' }), opts)
+    const { OpenAI } = await import('openai')
+    const client = new OpenAI({ apiKey })
+    const prompt = messages.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n\n')
+    return withRetries(async () => {
+      const res = await client.chat.completions.create({
+        model: process.env.OPENAI_MODEL ?? 'gpt-4o-mini',
+        messages: messages.map(m => ({ role: m.role, content: m.content })) as any,
+        max_tokens: opts?.maxTokens ?? 800,
+        temperature: 0
+      })
+      const text = res.choices?.[0]?.message?.content ?? ''
+      return { text }
+    }, opts)
   }
 }

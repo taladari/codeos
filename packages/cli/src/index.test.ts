@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { createBlueprint, initProject } from './index'
+import { createBlueprint, initProject } from './index.js'
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
 
