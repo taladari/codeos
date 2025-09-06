@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { loadConfig } from './index'
+import { loadConfig } from './index.js'
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
 

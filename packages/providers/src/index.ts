@@ -2,19 +2,19 @@ export interface LLMMessage { role: 'system'|'user'|'assistant'; content: string
 export interface LLMResponse { text: string; }
 export interface LLMDriver {
   name: string;
-  generate(messages: LLMMessage[], opts?: {maxTokens?: number}): Promise<LLMResponse>;
+  generate(messages: LLMMessage[], opts?: {maxTokens?: number, timeoutMs?: number, retries?: number}): Promise<LLMResponse>;
 }
 
 export class ClaudeDriver implements LLMDriver {
   name = 'claude';
-  async generate(_messages: LLMMessage[]): Promise<LLMResponse> {
+  async generate(_messages: LLMMessage[], _opts?: {maxTokens?: number, timeoutMs?: number, retries?: number}): Promise<LLMResponse> {
     return { text: '[stubbed-claude-response]' };
   }
 }
 
 export class OpenAIDriver implements LLMDriver {
   name = 'openai';
-  async generate(_messages: LLMMessage[]): Promise<LLMResponse> {
+  async generate(_messages: LLMMessage[], _opts?: {maxTokens?: number, timeoutMs?: number, retries?: number}): Promise<LLMResponse> {
     return { text: '[stubbed-openai-response]' };
   }
 }

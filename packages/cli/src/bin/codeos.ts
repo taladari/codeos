@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import { loadConfig } from 'codeos-core';
-import { initProject, runWorkflow, createBlueprint, setLogLevel, logger } from '../index.js';
+import { loadConfig, analyzeRepo, writeAnalyzeReport } from 'codeos-core';
+import { initProject, runWorkflow, createBlueprint, setLogLevel, logger, findProjectRoot } from '../index.js';
 
 const program = new Command();
 program
@@ -35,5 +35,13 @@ program.command('run').description('Run a workflow')
     const cfg = await loadConfig();
     await runWorkflow(name, cfg);
   });
+
+program.command('analyze').description('Detect repo stack and write .codeos/reports/analyze.json')
+  .action(async () => {
+    const root = await findProjectRoot();
+    const report = await analyzeRepo(root);
+    const out = await writeAnalyzeReport(root, report);
+    logger.info(`🧭 Analyzer wrote ${out}`)
+  })
 
 program.parseAsync(process.argv);

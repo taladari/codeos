@@ -74,3 +74,8 @@ export async function loadConfig(cwd: string = process.cwd()): Promise<CodeOSCon
     return { ...defaultConfig }
   }
 }
+
+export * from './analyzer.js'
+export * from './redact.js'
+export * from './detectors.js'
+export * from './repo.js'

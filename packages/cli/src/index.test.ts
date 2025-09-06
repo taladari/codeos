@@ -11,17 +11,18 @@ describe('cli:createBlueprint', () => {
 })
 
 describe('cli:initProject', () => {
-  const tmp = path.join(process.cwd(), '.codeos')
+  const tmpRoot = path.join(process.cwd(), '.tmp-cli-test')
   beforeEach(async () => {
-    try { await fs.rm(tmp, { recursive: true }) } catch {}
+    try { await fs.rm(tmpRoot, { recursive: true }) } catch {}
+    await fs.mkdir(tmpRoot, { recursive: true })
   })
   afterEach(async () => {
-    try { await fs.rm(tmp, { recursive: true }) } catch {}
+    try { await fs.rm(tmpRoot, { recursive: true }) } catch {}
   })
 
   it('creates artifact directories and sample config idempotently', async () => {
-    await initProject()
-    await initProject() // idempotent
+    await initProject(tmpRoot)
+    await initProject(tmpRoot) // idempotent
     const dirs = [
       '.codeos',
       '.codeos/blueprints',
@@ -31,10 +32,10 @@ describe('cli:initProject', () => {
       '.codeos/review'
     ]
     for (const d of dirs) {
-      const stat = await fs.stat(d)
+      const stat = await fs.stat(path.join(tmpRoot, d))
       expect(stat.isDirectory()).toBe(true)
     }
-    const yml = await fs.readFile(path.join(process.cwd(), 'codeos.yml'), 'utf8')
+    const yml = await fs.readFile(path.join(tmpRoot, 'codeos.yml'), 'utf8')
     expect(yml).toContain('workflow: build')
   })
 })
