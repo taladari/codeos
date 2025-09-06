@@ -7,17 +7,20 @@ Deliver a minimal but real **end‑to‑end** path from prompt to **passing PR**
 - **CLI**: `init`, `blueprint <title>`, `run <workflow>`
 - **Roles (linear)**:
   - Planner → `.codeos/plan/Plan.md`
-  - Builder → `.codeos/patches/*.diff` + tests (unified diff only)
+  - Builder → `.codeos/patches/*.diff` + tests (unified diff only; prose rejected; size limits enforced)
   - Verifier → sandbox apply + ESLint/tsc/Vitest; `.codeos/reports/*`
   - Reviewer → `.codeos/review/PR_SUMMARY.md`
 - **GitHub**: create branch, commit patch, open PR, attach summary, post gate checks
 - **Artifacts** under `.codeos/` (blueprints, plan, patches, reports, review, run logs)
 - **Provider drivers** (stubs for Claude/OpenAI)
+- **Analyzer (extensible)**: pluggable detector registry for language/package manager/tools
+- **Redaction**: redact sensitive env vars from prompts/artifacts by default
 
 ## 🧪 Gates
 - **Formatting/Lint**: ESLint
 - **Typing**: TypeScript compiler (`tsc`)
 - **Unit tests**: Vitest discovery & run
+  - Run in a deterministic local sandbox (temp workspace/container)
 
 ## 🚫 Out of Scope (v0.1)
 - Concurrency across roles
@@ -37,9 +40,9 @@ Deliver a minimal but real **end‑to‑end** path from prompt to **passing PR**
 ## ✅ Definition of Done
 Running `codeos run build` on a small TS repo:
 1. Creates Blueprint & Plan
-2. Produces minimal diffs + tests
-3. Passes ESLint + tsc + Vitest locally
-4. Opens a PR with summary and attaches reports/checks
+2. Produces minimal unified diffs + tests (no prose)
+3. Applies in sandbox; passes ESLint + tsc + Vitest locally; writes JSON reports
+4. Opens a PR with summary; posts one status per gate; links `.codeos/reports/*`
 
 ## 🗓️ Suggested 4‑Week Plan
 - **Week 1**: CLI skeleton, config loader, `init`, `blueprint`

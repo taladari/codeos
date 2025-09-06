@@ -10,11 +10,13 @@ Detect repo characteristics and expose LLM providers behind a stable interface.
 
 ## Acceptance Criteria
 - Analyzer writes `reports/analyze.json` with language, pm, formatter, linter, test runner.
+- Analyzer uses a **pluggable detector registry** (OSS‑friendly) for language/package manager/tools.
 - Provider interface: `generate(messages[], opts)` with retries/timeouts/token limits.
 - Sensitive env vars are redacted from prompts by default.
 
 ## Dev Tasks
-1. Analyzer for Node/TS (Python later).
+1. Analyzer with detector registry + default detectors for Node/TS (Python later).
 2. Provider interface; Claude/OpenAI stub drivers with mock tests.
 3. Prompt templating helper + redaction (env var denylist).
 4. Unit tests for analyzer detection logic.
+5. Contributor guide: how to add a new detector.

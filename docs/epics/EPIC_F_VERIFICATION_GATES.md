@@ -11,6 +11,7 @@ Enforce quality via lint, typecheck, and tests before PR creation.
 - ESLint, tsc, and Vitest wired into Verifier.
 - Reports saved to `.codeos/reports/` as JSON.
 - Non‑zero exit halts workflow; Reviewer summarizes failures.
+ - Verification runs in a deterministic **sandbox** (temp workspace or container) with fail‑fast behavior.
 
 ## Dev Tasks
 1. Command execution per analyzer (e.g., `pnpm lint`, `pnpm test`).

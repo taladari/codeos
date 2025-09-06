@@ -5,16 +5,39 @@ export interface LLMDriver {
   generate(messages: LLMMessage[], opts?: {maxTokens?: number, timeoutMs?: number, retries?: number}): Promise<LLMResponse>;
 }
 
+export async function withRetries<T>(fn: () => Promise<T>, opts: { retries?: number, timeoutMs?: number } = {}): Promise<T> {
+  const { retries = 0, timeoutMs } = opts
+  let lastErr: unknown
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const p = fn()
+      const v = timeoutMs ? await promiseWithTimeout(p, timeoutMs) : await p
+      return v
+    } catch (e) {
+      lastErr = e
+      if (attempt === retries) break
+    }
+  }
+  throw lastErr
+}
+
+async function promiseWithTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
+  return await new Promise<T>((resolve, reject) => {
+    const t = setTimeout(() => reject(new Error(`LLM timeout after ${ms}ms`)), ms)
+    p.then(v => { clearTimeout(t); resolve(v) }, err => { clearTimeout(t); reject(err) })
+  })
+}
+
 export class ClaudeDriver implements LLMDriver {
   name = 'claude';
-  async generate(_messages: LLMMessage[], _opts?: {maxTokens?: number, timeoutMs?: number, retries?: number}): Promise<LLMResponse> {
-    return { text: '[stubbed-claude-response]' };
+  async generate(_messages: LLMMessage[], opts?: {maxTokens?: number, timeoutMs?: number, retries?: number}): Promise<LLMResponse> {
+    return withRetries(async () => ({ text: '[stubbed-claude-response]' }), opts)
   }
 }
 
 export class OpenAIDriver implements LLMDriver {
   name = 'openai';
-  async generate(_messages: LLMMessage[], _opts?: {maxTokens?: number, timeoutMs?: number, retries?: number}): Promise<LLMResponse> {
-    return { text: '[stubbed-openai-response]' };
+  async generate(_messages: LLMMessage[], opts?: {maxTokens?: number, timeoutMs?: number, retries?: number}): Promise<LLMResponse> {
+    return withRetries(async () => ({ text: '[stubbed-openai-response]' }), opts)
   }
 }

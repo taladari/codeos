@@ -9,7 +9,7 @@ Open PRs automatically with artifacts and checks attached.
 
 ## Acceptance Criteria
 - Create branch, commit patches, open PR.
-- Attach/inline `PR_SUMMARY.md` and link reports.
+- Attach/inline `PR_SUMMARY.md` and link `.codeos/reports/*`.
 - Post status checks per gate (lint/type/tests) with pass/fail.
 
 ## Dev Tasks

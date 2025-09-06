@@ -11,7 +11,7 @@ Transform a blueprint into patches, verify them, and prepare a PR.
 
 ## Acceptance Criteria
 - Planner → `plan/Plan.md` with goals, constraints, affected files, test plan (≤200 lines).
-- Builder → **unified diffs** only; rejects prose; includes test edits/new tests.
+- Builder → **unified diffs** only; rejects prose; includes test edits/new tests; enforces diff size limits.
 - Verifier → applies diffs in sandbox; runs gates; writes JSON reports.
 - Reviewer → `review/PR_SUMMARY.md` referencing artifacts with clear pass/fail.
 
