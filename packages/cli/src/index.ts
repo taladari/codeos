@@ -1,6 +1,6 @@
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
-import { WorkflowEngine, DEFAULT_WORKFLOWS, CodeOSConfig } from 'codeos-core'
+import { WorkflowEngine, DEFAULT_WORKFLOWS, CodeOSConfig, type GitHubConfig } from 'codeos-core'
 
 type LogLevel = 'quiet'|'normal'|'verbose'
 let CURRENT_LEVEL: LogLevel = 'normal'
@@ -326,3 +326,9 @@ export async function inspectWorkflowRun(runId: string, cwd?: string): Promise<v
     throw error
   }
 }
+
+// Import GitHub functions from separate module
+export { createPullRequest, checkGitHubSetup } from './github-utils.js'
+
+// Import authentication commands
+export { authLogin, authLogout, authStatus } from './auth-commands.js'

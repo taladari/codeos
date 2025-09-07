@@ -3,7 +3,7 @@ import { Command } from 'commander';
 import { config as dotenvConfig } from 'dotenv'
 import path from 'node:path'
 import { loadConfig, analyzeRepo, writeAnalyzeReport } from 'codeos-core';
-import { initProject, runWorkflow, createBlueprint, setLogLevel, logger, findProjectRoot, selectProvider, resumeWorkflow, listWorkflowRuns, retryWorkflowFromStep, inspectWorkflowRun } from '../index.js';
+import { initProject, runWorkflow, createBlueprint, setLogLevel, logger, findProjectRoot, selectProvider, resumeWorkflow, listWorkflowRuns, retryWorkflowFromStep, inspectWorkflowRun, createPullRequest, checkGitHubSetup, authLogin, authLogout, authStatus } from '../index.js';
 
 const program = new Command();
 program
@@ -81,6 +81,50 @@ program.command('inspect').description('Inspect workflow run details')
   .action(async (runId) => {
     const root = await findProjectRoot();
     await inspectWorkflowRun(runId, root);
+  });
+
+program.command('pr').description('Create GitHub Pull Request from workflow run')
+  .argument('<runId>', 'Run ID to create PR from')
+  .option('-t, --title <title>', 'PR title (defaults to blueprint title)')
+  .option('-b, --branch <branch>', 'Branch name (defaults to codeos/<timestamp>)')
+  .option('--base <base>', 'Base branch (defaults to main)')
+  .option('-d, --draft', 'Create as draft PR')
+  .action(async (runId, options) => {
+    const root = await findProjectRoot();
+    await createPullRequest(runId, {
+      title: options.title,
+      branchName: options.branch,
+      baseBranch: options.base,
+      draft: options.draft
+    }, root);
+  });
+
+// Authentication commands
+const authCmd = program.command('auth').description('GitHub authentication commands');
+
+authCmd.command('login').description('Authenticate with GitHub using OAuth')
+  .option('--no-browser', 'Don\'t automatically open browser')
+  .action(async (options) => {
+    await authLogin({ noBrowser: !options.browser });
+  });
+
+authCmd.command('logout').description('Sign out of GitHub')
+  .action(async () => {
+    await authLogout();
+  });
+
+authCmd.command('status').description('Check GitHub authentication status')
+  .action(async () => {
+    await authStatus();
+  });
+
+// GitHub setup commands
+const githubCmd = program.command('github').description('GitHub integration commands');
+
+githubCmd.command('setup').description('Check and guide GitHub integration setup')
+  .action(async () => {
+    const root = await findProjectRoot();
+    await checkGitHubSetup(root);
   });
 
 program.parseAsync(process.argv);
