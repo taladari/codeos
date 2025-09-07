@@ -2,6 +2,7 @@ import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import { runPlanner, runBuilder, runVerifier, runReviewer, RoleName } from './roles.js'
 import type { LLMDriverLike } from './roles.js'
+import { GitHubService, CodeOSGitHubIntegration, type GitHubConfig } from './github.js'
 
 export interface WorkflowStep {
   role: RoleName
@@ -408,6 +409,73 @@ export class WorkflowEngine {
 
   getRunDir(): string {
     return this.runDir
+  }
+
+  async createPullRequest(githubConfig: GitHubConfig, options: {
+    title?: string
+    branchName?: string
+    baseBranch?: string
+    draft?: boolean
+  } = {}): Promise<{
+    pr: { number: number; html_url: string; head: { sha: string; ref: string } }
+    branch: string
+    commit: string
+  }> {
+    const github = new GitHubService(githubConfig)
+    const integration = new CodeOSGitHubIntegration(github, this.root)
+
+    // Verify GitHub access
+    const hasAccess = await github.checkRepoAccess()
+    if (!hasAccess) {
+      throw new Error(`No access to GitHub repository: ${githubConfig.repo}`)
+    }
+
+    // Generate title from latest blueprint if not provided
+    let title = options.title
+    if (!title) {
+      const latest = await this.findLatestBlueprint()
+      title = latest.title || 'CodeOS Generated Changes'
+    }
+
+    const result = await integration.createCodeOSPullRequest({
+      title,
+      branchName: options.branchName,
+      baseBranch: options.baseBranch || 'main',
+      draft: options.draft,
+      runId: this.runId,
+      workflowName: this.run.workflow
+    })
+
+    // Log the PR creation
+    await this.log('info', 'Created GitHub Pull Request', {
+      prNumber: result.pr.number,
+      prUrl: result.pr.html_url,
+      branch: result.branch,
+      commit: result.commit
+    })
+
+    return result
+  }
+
+  private async findLatestBlueprint(): Promise<{ title: string, path?: string, content?: string }> {
+    const bpDir = path.join(this.root, '.codeos', 'blueprints')
+    try {
+      const entries = await fs.readdir(bpDir)
+      let latest: { p: string, m: number } | null = null
+      for (const f of entries) {
+        if (!f.endsWith('.md')) continue
+        const p = path.join(bpDir, f)
+        const st = await fs.stat(p)
+        if (!latest || st.mtimeMs > latest.m) latest = { p, m: st.mtimeMs }
+      }
+      if (latest) {
+        const data = await fs.readFile(latest.p, 'utf8')
+        const first = data.split(/\r?\n/)[0] ?? ''
+        const title = first.replace(/^#\s*/, '') || path.basename(latest.p, '.md').replace(/-/g, ' ')
+        return { title, path: latest.p, content: data }
+      }
+    } catch {}
+    return { title: 'Untitled Blueprint' }
   }
 }
 
