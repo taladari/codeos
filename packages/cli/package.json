@@ -1,15 +1,36 @@
 {
-  "name": "codeos-cli",
+  "name": "@taladari/codeos",
+  "publishConfig": {
+    "access": "public"
+  },
   "version": "0.1.0",
   "type": "module",
+  "description": "AI-native development framework CLI",
+  "keywords": ["ai", "development", "cli", "automation", "github", "workflow"],
+  "author": "Tal Adari <tal0392@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/taladari/codeos",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/taladari/codeos.git",
+    "directory": "packages/cli"
+  },
   "bin": {
     "codeos": "./dist/bin/codeos.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
   },
   "scripts": {
     "build": "tsc -b",
     "dev": "node --loader ts-node/esm src/bin/codeos.ts",
     "lint": "eslint .",
-    "test": "vitest"
+    "test": "vitest",
+    "prepublishOnly": "pnpm build"
   },
   "dependencies": {
     "commander": "^11.1.0",

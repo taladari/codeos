@@ -1,7 +1,23 @@
 {
-  "name": "codeos-providers",
+  "name": "@taladari/codeos-providers",
   "version": "0.1.0",
   "type": "module",
+  "description": "LLM providers for CodeOS AI-native development framework",
+  "author": "Tal Adari <tal0392@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/taladari/codeos",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/taladari/codeos.git",
+    "directory": "packages/providers"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "exports": {
     ".": "./dist/index.js"
   },
