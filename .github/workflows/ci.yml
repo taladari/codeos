@@ -19,7 +19,7 @@ jobs:
       - run: pnpm i
       - run: pnpm -w lint
       - run: pnpm -w build
-      - run: pnpm -w test -- --run
+      - run: pnpm -r exec vitest --run
 
   publish:
     needs: test
