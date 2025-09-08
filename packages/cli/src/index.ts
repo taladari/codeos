@@ -1,6 +1,6 @@
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
-import { WorkflowEngine, DEFAULT_WORKFLOWS, CodeOSConfig, type GitHubConfig } from 'codeos-core'
+import { WorkflowEngine, DEFAULT_WORKFLOWS, CodeOSConfig, type GitHubConfig, usageManager, withUsageCheck } from 'codeos-core'
 
 type LogLevel = 'quiet'|'normal'|'verbose'
 let CURRENT_LEVEL: LogLevel = 'normal'
@@ -100,6 +100,28 @@ export async function createBlueprint(title: string, cwd?: string): Promise<stri
 
 export async function runWorkflow(name: string, cfg: CodeOSConfig, cwd?: string, provider?: { name: string }): Promise<void> {
   const root = cwd ?? await findProjectRoot()
+  
+  // Check usage quota before running workflow
+  const context = {
+    command: `workflow.${name}`,
+    token: await usageManager.getUserToken(),
+    userId: await usageManager.getAnonymousId(),
+    version: process.env.npm_package_version || '0.1.0',
+    metadata: { workflow: name, provider: provider?.name }
+  }
+  
+  const quota = await usageManager.checkQuota(context)
+  if (!quota.allowed) {
+    logger.error(`❌ ${quota.message}`)
+    if (quota.upgradeUrl) {
+      logger.info(`💡 Learn more: ${quota.upgradeUrl}`)
+    }
+    return
+  }
+  
+  if (quota.message && quota.message !== 'Running in community mode') {
+    logger.info(`ℹ️ ${quota.message}`)
+  }
   
   // Get workflow config
   const workflowConfig = cfg.workflows?.[name] || DEFAULT_WORKFLOWS[name]
