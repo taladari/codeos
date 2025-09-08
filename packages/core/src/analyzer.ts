@@ -73,7 +73,7 @@ async function listWorkspacePackageDirs(root: string): Promise<string[]> {
   return out
 }
 
-async function collectAllDeps(root: string): Promise<Set<string>> {
+async function _collectAllDeps(root: string): Promise<Set<string>> {
   const deps = new Set<string>()
   const addFrom = (pkg: any) => {
     for (const k of Object.keys(pkg?.dependencies ?? {})) deps.add(k)
@@ -89,7 +89,7 @@ async function collectAllDeps(root: string): Promise<Set<string>> {
   return deps
 }
 
-async function detectConfigSignals(root: string): Promise<{ hasPrettierCfg: boolean; hasEslintCfg: boolean; hasVitestCfg: boolean; hasJestCfg: boolean; hasMochaCfg: boolean }> {
+async function _detectConfigSignals(root: string): Promise<{ hasPrettierCfg: boolean; hasEslintCfg: boolean; hasVitestCfg: boolean; hasJestCfg: boolean; hasMochaCfg: boolean }> {
   const existsAny = async (paths: string[]) => {
     for (const p of paths) { if (await fileExists(p)) return true }
     return false

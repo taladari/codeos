@@ -69,7 +69,7 @@ export class GitHubOAuthClient {
             await open(deviceCode.verification_uri)
             console.log('🌐 Opened browser - please enter the code above')
           }
-        } catch (error) {
+        } catch (_error) {
           console.log('💡 Please visit the URL manually')
         }
       }
@@ -94,8 +94,8 @@ export class GitHubOAuthClient {
         token: token.access_token
       }
       
-    } catch (error) {
-      throw new Error(`Authentication failed: ${error instanceof Error ? error.message : String(error)}`)
+    } catch (_error) {
+      throw new Error(`Authentication failed: ${_error instanceof Error ? _error.message : String(_error)}`)
     }
   }
 
@@ -106,7 +106,7 @@ export class GitHubOAuthClient {
     try {
       await keytar.deletePassword(this.serviceName, this.accountName)
       console.log('✅ Successfully logged out')
-    } catch (error) {
+    } catch (_error) {
       // Token might not exist, that's okay
       console.log('✅ Logged out (no token was stored)')
     }
@@ -131,7 +131,7 @@ export class GitHubOAuthClient {
         token
       }
       
-    } catch (error) {
+    } catch (_error) {
       // Token is invalid or expired
       await this.logout() // Clean up invalid token
       return { authenticated: false }
@@ -144,7 +144,7 @@ export class GitHubOAuthClient {
   async getStoredToken(): Promise<string | null> {
     try {
       return await keytar.getPassword(this.serviceName, this.accountName)
-    } catch (error) {
+    } catch (_error) {
       return null
     }
   }
@@ -220,9 +220,9 @@ export class GitHubOAuthClient {
 
         throw new Error(`OAuth error: ${result.error_description || result.error}`)
 
-      } catch (error) {
-        if (error instanceof Error && error.message.includes('OAuth error')) {
-          throw error
+      } catch (_error) {
+        if (_error instanceof Error && _error.message.includes('OAuth error')) {
+          throw _error
         }
         // Network error, continue polling
         continue
@@ -251,7 +251,7 @@ export class GitHubOAuthClient {
   private async storeToken(token: string): Promise<void> {
     try {
       await keytar.setPassword(this.serviceName, this.accountName, token)
-    } catch (error) {
+    } catch (_error) {
       // Fallback to file storage if keytar fails
       console.warn('⚠️ Secure storage unavailable, using file storage')
       await this.storeTokenFile(token)

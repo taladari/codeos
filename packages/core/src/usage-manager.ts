@@ -44,7 +44,7 @@ export class UsageManager {
       const result = await this.checkApiQuota(context)
       if (result) return result
     } catch (error) {
-      console.debug('Usage API unavailable:', error.message)
+      console.debug('Usage API unavailable:', error instanceof Error ? error.message : String(error))
     }
 
     // Fallback: Allow execution (for now)
@@ -139,14 +139,14 @@ export class UsageManager {
   /**
    * Get user token from auth system
    */
-  async getUserToken(): Promise<string | null> {
+  async getUserToken(): Promise<string | undefined> {
     try {
       const { GitHubOAuthClient } = await import('./github-auth.js')
       const oauth = new GitHubOAuthClient()
       const status = await oauth.status()
-      return status.token || null
+      return status.token || undefined
     } catch {
-      return null
+      return undefined
     }
   }
 
@@ -194,7 +194,7 @@ export function withUsageCheck(command: string) {
       const quota = await usageManager.checkQuota(context)
       
       if (!quota.allowed) {
-        console.error(`❌ ${quota.message}`)
+        console.error(`${quota.message}`)
         if (quota.upgradeUrl) {
           console.info(`💡 Learn more: ${quota.upgradeUrl}`)
         }

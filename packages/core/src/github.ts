@@ -63,7 +63,7 @@ export class GitHubService {
       }
       
       throw new Error(`Could not parse GitHub repository from remote URL: ${remoteUrl}`)
-    } catch (error) {
+    } catch (_error) {
       throw new Error('Could not detect GitHub repository. Make sure you\'re in a git repository with GitHub remote.')
     }
   }
@@ -73,7 +73,7 @@ export class GitHubService {
     try {
       const { detectGitHubToken } = await import('./github-auth.js')
       return await detectGitHubToken()
-    } catch (error) {
+    } catch (_error) {
       // Fallback to basic detection
       const sources = [
         configToken,
@@ -112,7 +112,7 @@ export class GitHubService {
     }
   }
 
-  private async apiRequest(endpoint: string, options: RequestInit = {}): Promise<any> {
+  private async apiRequest(endpoint: string, options: { method?: string; body?: string; headers?: Record<string, string> } = {}): Promise<any> {
     await this.ensureToken()
     
     const url = `${this.apiUrl}${endpoint}`
@@ -131,7 +131,7 @@ export class GitHubService {
 
     if (!response.ok) {
       const error = await response.text()
-      throw new Error(`GitHub API error (${response.status}): ${error}`)
+      throw new Error(`GitHub API error (${response.status}): ${response.statusText}`)
     }
 
     return response.json()
@@ -141,16 +141,16 @@ export class GitHubService {
   getCurrentBranch(): string {
     try {
       return execSync('git branch --show-current', { encoding: 'utf8' }).trim()
-    } catch (error) {
-      throw new Error(`Failed to get current git branch: ${error}`)
+    } catch (_error) {
+      throw new Error(`Failed to get current git branch: ${_error}`)
     }
   }
 
   getCurrentCommitSha(): string {
     try {
       return execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim()
-    } catch (error) {
-      throw new Error(`Failed to get current commit SHA: ${error}`)
+    } catch (_error) {
+      throw new Error(`Failed to get current commit SHA: ${_error}`)
     }
   }
 
@@ -161,8 +161,8 @@ export class GitHubService {
       
       // Create and checkout new branch from remote base
       execSync(`git checkout -b ${branchName} origin/${baseBranch}`, { stdio: 'pipe' })
-    } catch (error) {
-      throw new Error(`Failed to create branch ${branchName}: ${error}`)
+    } catch (_error) {
+      throw new Error(`Failed to create branch ${branchName}: ${_error}`)
     }
   }
 
@@ -182,7 +182,7 @@ export class GitHubService {
       try {
         execSync('git diff --cached --quiet', { stdio: 'pipe' })
         throw new Error('No changes to commit')
-      } catch (error) {
+      } catch (_error) {
         // Good - there are changes to commit (git diff --quiet exits with 1 when there are differences)
       }
       
@@ -192,16 +192,16 @@ export class GitHubService {
       
       // Return commit SHA
       return execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim()
-    } catch (error) {
-      throw new Error(`Failed to commit changes: ${error}`)
+    } catch (_error) {
+      throw new Error(`Failed to commit changes: ${_error}`)
     }
   }
 
   pushBranch(branchName: string): void {
     try {
       execSync(`git push -u origin ${branchName}`, { stdio: 'pipe' })
-    } catch (error) {
-      throw new Error(`Failed to push branch ${branchName}. Check your git authentication: ${error}`)
+    } catch (_error) {
+      throw new Error(`Failed to push branch ${branchName}. Check your git authentication: ${_error}`)
     }
   }
 
@@ -351,7 +351,7 @@ export class CodeOSGitHubIntegration {
         const content = await fs.readFile(filePath, 'utf8')
         patches.push({ file, content })
       }
-    } catch (error) {
+    } catch (_error) {
       // No patches directory
     }
 
@@ -461,8 +461,8 @@ export class CodeOSGitHubIntegration {
           target_url: runId ? `${this.root}/.codeos/run/${runId}` : undefined
         })
       }
-    } catch (error) {
-      console.warn('Failed to create status checks:', error)
+    } catch (_error) {
+      console.warn('Failed to create status checks:', _error)
     }
   }
 

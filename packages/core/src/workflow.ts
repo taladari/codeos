@@ -178,8 +178,8 @@ export class WorkflowEngine {
           try {
             await this.executeStep(i, provider)
             break // Success, move to next step
-          } catch (error) {
-            lastError = error as Error
+          } catch (_error) {
+            lastError = _error as Error
             attempts++
             
             if (attempts <= retries) {
@@ -287,8 +287,8 @@ export class WorkflowEngine {
           try {
             await this.executeStep(i, provider)
             break // Success, move to next step
-          } catch (error) {
-            lastError = error as Error
+          } catch (_error) {
+            lastError = _error as Error
             attempts++
             
             if (attempts <= retries) {

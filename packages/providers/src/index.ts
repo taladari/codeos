@@ -42,11 +42,10 @@ export class OpenAIDriver implements LLMDriver {
     if (!apiKey) return withRetries(async () => ({ text: '[stubbed-openai-response]' }), opts)
     const { OpenAI } = await import('openai')
     const client = new OpenAI({ apiKey })
-    const prompt = messages.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n\n')
     return withRetries(async () => {
       const res = await client.chat.completions.create({
         model: process.env.OPENAI_MODEL ?? 'gpt-4o-mini',
-        messages: messages.map(m => ({ role: m.role, content: m.content })) as any,
+        messages: messages.map(m => ({ role: m.role, content: m.content })) as Parameters<typeof client.chat.completions.create>[0]['messages'],
         max_tokens: opts?.maxTokens ?? 800,
         temperature: 0
       })

@@ -1,5 +1,5 @@
 {
-  "name": "@taladari/codeos-core",
+  "name": "codeos-core",
   "version": "0.1.0",
   "type": "module",
   "description": "Core functionality for CodeOS AI-native development framework",

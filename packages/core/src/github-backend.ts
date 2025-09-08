@@ -47,7 +47,7 @@ export class CodeOSBackend {
       const result = await this.createBackendPR(token, repo, options, artifacts)
       return { ...result, mode: 'backend' }
     } catch (error) {
-      console.warn('Backend PR creation failed, falling back to local mode:', error.message)
+      console.warn('Backend PR creation failed, falling back to local mode:', error instanceof Error ? error.message : String(error))
       
       // Fallback to local PR creation (community mode)
       const { GitHubService, CodeOSGitHubIntegration } = await import('./github.js')

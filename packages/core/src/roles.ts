@@ -99,15 +99,15 @@ function extractFirstUnifiedDiff(text: string): string | null {
   const lines = text.split(/\r?\n/)
   const out: string[] = []
   let inBlock = false
-  let sawMinus = false
-  let sawPlus = false
+  let _sawMinus = false
+  let _sawPlus = false
   for (const l of lines) {
     if (l.startsWith('--- ') || l.startsWith('+++ ') || l.startsWith('@@')) { inBlock = true; out.push(l); continue }
     if (inBlock) {
       if (l.startsWith('+') || l.startsWith('-') || l.startsWith(' ') || l === '') {
         out.push(l)
-        if (l.startsWith('--- ')) sawMinus = true
-        if (l.startsWith('+++ ')) sawPlus = true
+        if (l.startsWith('--- ')) _sawMinus = true
+        if (l.startsWith('+++ ')) _sawPlus = true
       }
       else if (/^\S/.test(l)) break
     }

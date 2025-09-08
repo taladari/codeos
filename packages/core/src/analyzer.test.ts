@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { analyzeRepo, writeAnalyzeReport, detectFromDeps } from './analyzer.js'
 import { promises as fs } from 'node:fs'
-import path from 'node:path'
+// import path from 'node:path' // unused
 
 describe('analyzer', () => {
   it('detects basic TS/Node and writes analyze.json', async () => {

@@ -8,12 +8,21 @@ importers:
 
   .:
     devDependencies:
+      '@eslint/js':
+        specifier: ^9.35.0
+        version: 9.35.0
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.0.0
         version: 8.42.0(@typescript-eslint/parser@8.42.0(eslint@9.35.0)(typescript@5.9.2))(eslint@9.35.0)(typescript@5.9.2)
       '@typescript-eslint/parser':
         specifier: ^8.0.0
         version: 8.42.0(eslint@9.35.0)(typescript@5.9.2)
+      eslint:
+        specifier: ^9.35.0
+        version: 9.35.0
+      globals:
+        specifier: ^15.0.0
+        version: 15.15.0
       typescript:
         specifier: ^5.4.0
         version: 5.9.2
@@ -890,6 +899,10 @@ packages:
 
   globals@14.0.0:
     resolution: {integrity: sha512-oahGvuMGQlPw/ivIYBjVSrWAfWLBeku5tpPE2fOPLi+WHffIWbuh2tCjhyQhTBPMf5E9jDEH4FOmTYgYwbKwtQ==}
+    engines: {node: '>=18'}
+
+  globals@15.15.0:
+    resolution: {integrity: sha512-7ACyT3wmyp3I61S4fG682L0VA2RGD9otkqGJIwNUMF1SWUombIIk+af1unuDYgMm082aHYwD+mzJvv9Iu8dsgg==}
     engines: {node: '>=18'}
 
   gopd@1.2.0:
@@ -2256,6 +2269,8 @@ snapshots:
       is-glob: 4.0.3
 
   globals@14.0.0: {}
+
+  globals@15.15.0: {}
 
   gopd@1.2.0: {}
 

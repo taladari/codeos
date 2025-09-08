@@ -1,5 +1,5 @@
 {
-  "name": "@taladari/codeos-providers",
+  "name": "codeos-providers",
   "version": "0.1.0",
   "type": "module",
   "description": "LLM providers for CodeOS AI-native development framework",

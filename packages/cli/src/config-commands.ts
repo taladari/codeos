@@ -78,7 +78,7 @@ async function setNestedValue(path: string, value: any): Promise<void> {
   const lastKey = keys.pop()!
   
   const config = await configManager.getConfig()
-  let current = config
+  let current = config as any
   
   // Navigate to parent object
   for (const key of keys) {

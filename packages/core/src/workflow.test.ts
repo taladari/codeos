@@ -103,7 +103,7 @@ describe('WorkflowEngine', () => {
     const engine = new WorkflowEngine(tmpRoot, 'build')
     
     // Create a mock workflow engine that throws during executeRole
-    const originalExecuteRole = engine.executeRole
+    const _originalExecuteRole = engine.executeRole
     engine.executeRole = async () => {
       throw new Error('Test failure')
     }
