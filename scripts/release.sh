@@ -37,7 +37,12 @@ pnpm -w build
 # Update version in all packages
 echo "📦 Updating version..."
 OLD_VERSION=$(node -p "require('./packages/cli/package.json').version")
-pnpm -r version $VERSION_TYPE --no-git-tag-version
+
+# Update each package individually
+cd packages/cli && pnpm version $VERSION_TYPE --no-git-tag-version && cd ../..
+cd packages/core && pnpm version $VERSION_TYPE --no-git-tag-version && cd ../..
+cd packages/providers && pnpm version $VERSION_TYPE --no-git-tag-version && cd ../..
+
 NEW_VERSION=$(node -p "require('./packages/cli/package.json').version")
 
 echo "📝 Version updated: $OLD_VERSION → $NEW_VERSION"
