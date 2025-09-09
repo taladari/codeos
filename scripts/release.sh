@@ -38,12 +38,35 @@ pnpm -w build
 echo "📦 Updating version..."
 OLD_VERSION=$(node -p "require('./packages/cli/package.json').version")
 
-# Update each package individually (staying in root directory)
-(cd packages/cli && pnpm version $VERSION_TYPE --no-git-tag-version)
-(cd packages/core && pnpm version $VERSION_TYPE --no-git-tag-version)  
-(cd packages/providers && pnpm version $VERSION_TYPE --no-git-tag-version)
+# Calculate new version
+if [ "$VERSION_TYPE" = "patch" ]; then
+  NEW_VERSION=$(node -e "
+    const [major, minor, patch] = '$OLD_VERSION'.split('.').map(Number);
+    console.log(\`\${major}.\${minor}.\${patch + 1}\`);
+  ")
+elif [ "$VERSION_TYPE" = "minor" ]; then
+  NEW_VERSION=$(node -e "
+    const [major, minor] = '$OLD_VERSION'.split('.').map(Number);
+    console.log(\`\${major}.\${minor + 1}.0\`);
+  ")
+elif [ "$VERSION_TYPE" = "major" ]; then
+  NEW_VERSION=$(node -e "
+    const [major] = '$OLD_VERSION'.split('.').map(Number);
+    console.log(\`\${major + 1}.0.0\`);
+  ")
+fi
 
-NEW_VERSION=$(node -p "require('./packages/cli/package.json').version")
+# Update package.json files manually
+node -e "
+  const fs = require('fs');
+  const packages = ['cli', 'core', 'providers'];
+  packages.forEach(pkg => {
+    const path = \`./packages/\${pkg}/package.json\`;
+    const json = JSON.parse(fs.readFileSync(path, 'utf8'));
+    json.version = '$NEW_VERSION';
+    fs.writeFileSync(path, JSON.stringify(json, null, 2) + '\n');
+  });
+"
 
 echo "📝 Version updated: $OLD_VERSION → $NEW_VERSION"
 
