@@ -28,7 +28,7 @@ git pull origin main
 
 # Run tests
 echo "🧪 Running tests..."
-pnpm -w test -- --run
+pnpm -r exec vitest --run
 
 # Build packages
 echo "🔨 Building packages..."
