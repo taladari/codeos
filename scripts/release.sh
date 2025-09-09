@@ -34,18 +34,16 @@ pnpm -r exec vitest --run
 echo "🔨 Building packages..."
 pnpm -w build
 
-# Update version in CLI package
+# Update version in all packages
 echo "📦 Updating version..."
-cd packages/cli
-OLD_VERSION=$(node -p "require('./package.json').version")
-npm version $VERSION_TYPE --no-git-tag-version
-NEW_VERSION=$(node -p "require('./package.json').version")
-cd ../..
+OLD_VERSION=$(node -p "require('./packages/cli/package.json').version")
+pnpm -r version $VERSION_TYPE --no-git-tag-version
+NEW_VERSION=$(node -p "require('./packages/cli/package.json').version")
 
 echo "📝 Version updated: $OLD_VERSION → $NEW_VERSION"
 
 # Commit version bump
-git add packages/cli/package.json
+git add packages/*/package.json
 git commit -m "chore: bump version to v$NEW_VERSION"
 
 # Create and push tag
