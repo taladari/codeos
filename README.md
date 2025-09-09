@@ -7,7 +7,7 @@ It orchestrates the messy bits of AI‑assisted coding into a **repeatable workf
 
 ---
 
-## ✨ Why CodeOS?
+## Why CodeOS?
 
 AI coding tools are great at generating snippets — but weak at **process**:
 - They forget your **repo standards** and **context**.
@@ -23,7 +23,7 @@ AI coding tools are great at generating snippets — but weak at **process**:
 
 ---
 
-## 🧠 Core Concepts
+## Core Concepts
 
 - **Blueprint** — durable description of a change: goals, constraints, acceptance criteria.
 - **Plan** — structured breakdown: affected files, steps, test plan.
@@ -38,7 +38,7 @@ AI coding tools are great at generating snippets — but weak at **process**:
 
 ---
 
-## 🚀 Quick Start (scaffold)
+## Quick Start (scaffold)
 
 ```bash
 pnpm i
@@ -68,7 +68,7 @@ codeos run build
 
 ---
 
-## 🧱 Repo Layout (Monorepo)
+## Repo Layout (Monorepo)
 
 ```
 codeos/
@@ -91,7 +91,7 @@ codeos/
 
 ---
 
-## 🗺️ Roadmap (Short)
+## Roadmap (Short)
 
 - **Phase 1 — MVP**: CLI, roles (linear), gates, GitHub PRs.  
 - **Phase 2 — Community**: Standards presets, Slack, Jira/Linear (read‑only), Plugin API draft, examples & docs.  
@@ -102,12 +102,12 @@ Full details in [ROADMAP.md](./ROADMAP.md).
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 We love contributions! See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup, style, tests, and PR guidelines.
 
 ---
 
-## 📝 License
+## License
 
 MIT — do whatever you want, just don’t remove the copyright and license notice.
