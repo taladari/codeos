@@ -1,8 +1,25 @@
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import os from 'node:os'
-import keytar from 'keytar'
 import open from 'open'
+
+// Lazy keytar loading for secure credential storage
+let keytar: typeof import('keytar') | null = null
+let keytarLoadAttempted = false
+
+async function getKeytar(): Promise<typeof import('keytar') | null> {
+  if (!keytarLoadAttempted) {
+    keytarLoadAttempted = true
+    try {
+      keytar = await import('keytar')
+    } catch {
+      // keytar not available (e.g., in CI environments without native libraries)
+      console.debug('keytar not available, using file-based token storage')
+      keytar = null
+    }
+  }
+  return keytar
+}
 
 // GitHub OAuth Device Flow interfaces
 interface DeviceCodeResponse {
@@ -104,7 +121,12 @@ export class GitHubOAuthClient {
    */
   async logout(): Promise<void> {
     try {
-      await keytar.deletePassword(this.serviceName, this.accountName)
+      const keytar = await getKeytar()
+      if (keytar) {
+        await keytar.deletePassword(this.serviceName, this.accountName)
+      }
+      // Also remove file-based token
+      await this.clearTokenFile()
       console.log('✅ Successfully logged out')
     } catch (_error) {
       // Token might not exist, that's okay
@@ -143,7 +165,12 @@ export class GitHubOAuthClient {
    */
   async getStoredToken(): Promise<string | null> {
     try {
-      return await keytar.getPassword(this.serviceName, this.accountName)
+      const keytar = await getKeytar()
+      if (keytar) {
+        return await keytar.getPassword(this.serviceName, this.accountName)
+      }
+      // Fallback to file-based storage
+      return await getTokenFile()
     } catch (_error) {
       return null
     }
@@ -250,10 +277,17 @@ export class GitHubOAuthClient {
 
   private async storeToken(token: string): Promise<void> {
     try {
-      await keytar.setPassword(this.serviceName, this.accountName, token)
+      const keytar = await getKeytar()
+      if (keytar) {
+        await keytar.setPassword(this.serviceName, this.accountName, token)
+        return
+      }
+      // Fallback to file storage if keytar not available
+      console.warn('⚠️ Secure storage unavailable, using file storage')
+      await this.storeTokenFile(token)
     } catch (_error) {
       // Fallback to file storage if keytar fails
-      console.warn('⚠️ Secure storage unavailable, using file storage')
+      console.warn('⚠️ Secure storage failed, using file storage')
       await this.storeTokenFile(token)
     }
   }
@@ -264,6 +298,15 @@ export class GitHubOAuthClient {
     
     const tokenFile = path.join(configDir, 'github-token')
     await fs.writeFile(tokenFile, token, { mode: 0o600 }) // Read-only for owner
+  }
+
+  private async clearTokenFile(): Promise<void> {
+    try {
+      const tokenFile = path.join(os.homedir(), '.codeos', 'github-token')
+      await fs.unlink(tokenFile)
+    } catch (_error) {
+      // File might not exist, that's okay
+    }
   }
 
   private async getTokenFile(): Promise<string | null> {
