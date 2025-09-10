@@ -1,5 +1,8 @@
 {
   "name": "codeos-providers",
+  "publishConfig": {
+    "access": "public"
+  },
   "version": "0.1.1",
   "type": "module",
   "description": "LLM providers for CodeOS AI-native development framework",

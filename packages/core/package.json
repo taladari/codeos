@@ -1,5 +1,8 @@
 {
   "name": "codeos-core",
+  "publishConfig": {
+    "access": "public"
+  },
   "version": "0.1.1",
   "type": "module",
   "description": "Core functionality for CodeOS AI-native development framework",

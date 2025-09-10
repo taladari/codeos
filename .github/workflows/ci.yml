@@ -42,8 +42,43 @@ jobs:
       - run: pnpm i
       - run: pnpm -w build
       
-      # Publish CLI package
-      - name: Publish CLI to npm
-        run: cd packages/cli && npm publish
+      # Get version from tag
+      - name: Get version
+        id: version
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+      
+      # Publish core and providers packages first
+      - name: Publish core package
+        run: cd packages/core && npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          
+      - name: Publish providers package  
+        run: cd packages/providers && npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      # Resolve workspace dependencies and publish CLI
+      - name: Resolve workspace dependencies and publish CLI
+        run: |
+          cd packages/cli
+          
+          # Replace workspace dependencies with actual versions
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            
+            if (pkg.dependencies['codeos-core'] === 'workspace:*') {
+              pkg.dependencies['codeos-core'] = '^${{ steps.version.outputs.version }}';
+            }
+            if (pkg.dependencies['codeos-providers'] === 'workspace:*') {
+              pkg.dependencies['codeos-providers'] = '^${{ steps.version.outputs.version }}';
+            }
+            
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
+          
+          # Publish the CLI package
+          npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
