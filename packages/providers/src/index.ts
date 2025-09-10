@@ -54,3 +54,16 @@ export class OpenAIDriver implements LLMDriver {
     }, opts)
   }
 }
+
+export async function selectProvider(name?: string): Promise<LLMDriver | null> {
+  const providerName = name ?? 'claude'
+  
+  switch (providerName.toLowerCase()) {
+    case 'claude':
+      return new ClaudeDriver()
+    case 'openai':
+      return new OpenAIDriver()
+    default:
+      return null
+  }
+}

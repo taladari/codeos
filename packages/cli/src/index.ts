@@ -1,6 +1,7 @@
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
-import { WorkflowEngine, DEFAULT_WORKFLOWS, CodeOSConfig, type GitHubConfig, usageManager, withUsageCheck } from 'codeos-core'
+import { WorkflowEngine, DEFAULT_WORKFLOWS, CodeOSConfig, type GitHubConfig, usageManager, withUsageCheck, analyzeRepo, loadConfig } from 'codeos-core'
+import { selectProvider as getProvider, type LLMDriver, type LLMMessage } from 'codeos-providers'
 
 type LogLevel = 'quiet'|'normal'|'verbose'
 let CURRENT_LEVEL: LogLevel = 'normal'
@@ -72,13 +73,21 @@ async function ensureFile(p: string): Promise<void> {
   }
 }
 
-export async function createBlueprint(title: string, cwd?: string): Promise<string> {
+export async function createBlueprint(title: string, cwd?: string, options?: { useAI?: boolean, provider?: string }): Promise<string> {
   const root = cwd ?? await findProjectRoot()
   const slug = title.trim().replace(/\s+/g, '-').toLowerCase()
   const dir = path.join(root, '.codeos', 'blueprints')
   await fs.mkdir(dir, { recursive: true })
   const filePath = path.join(dir, `${slug}.md`)
-  const content = `# ${title}
+  
+  let content: string
+  
+  if (options?.useAI !== false) {
+    // AI-enhanced blueprint generation
+    content = await generateAIBlueprint(title, root, options?.provider)
+  } else {
+    // Traditional empty template
+    content = `# ${title}
 
 ## Goals
 - 
@@ -93,9 +102,113 @@ export async function createBlueprint(title: string, cwd?: string): Promise<stri
 - 
 
 `
+  }
+  
   await fs.writeFile(filePath, content, 'utf8')
   logger.debug(`Blueprint written to ${filePath}`)
   return path.relative(root, filePath)
+}
+
+async function generateAIBlueprint(title: string, root: string, providerName?: string): Promise<string> {
+  try {
+    // Get project context
+    const config = await loadConfig(root).catch(() => null)
+    const analysis = await analyzeRepo(root).catch(() => null)
+    
+    // Determine language and tech stack from analysis
+    const language = config?.project?.language ?? analysis?.language ?? 'typescript'
+    const packageManager = config?.project?.package_manager ?? analysis?.packageManager ?? 'npm'
+    const testRunner = analysis?.testRunner ?? 'jest'
+    const frameworks: string[] = [] // TODO: Add framework detection to analyzer
+    
+    // Get LLM provider
+    const provider = await getProvider(providerName ?? config?.providers?.llm ?? 'claude')
+    if (!provider) {
+      throw new Error(`Provider not available: ${providerName ?? config?.providers?.llm ?? 'claude'}`)
+    }
+    
+    // Create context-aware prompt
+    const systemPrompt = {
+      role: 'system' as const,
+      content: `You are an expert software architect. Generate a detailed, actionable blueprint for the requested feature.
+
+Project Context:
+- Language: ${language}
+- Package Manager: ${packageManager}  
+- Test Runner: ${testRunner}
+- Frameworks: ${frameworks.join(', ') || 'None detected'}
+
+Create a comprehensive blueprint with:
+1. Clear, specific goals
+2. Technical constraints based on the project stack
+3. Detailed acceptance criteria with checkboxes
+4. Comprehensive test plan
+5. Consider security, performance, and maintainability
+
+Be specific and actionable. Avoid generic advice.`
+    }
+    
+    const userPrompt = {
+      role: 'user' as const,
+      content: `Create a blueprint for: "${title}"`
+    }
+    
+    // Generate AI content
+    const response = await provider.generate([systemPrompt, userPrompt], {
+      maxTokens: 1000,
+      timeoutMs: 15000,
+      retries: 2
+    })
+    
+    // Format the response as a proper blueprint
+    const aiContent = response.text.trim()
+    
+    // Ensure it starts with the title
+    if (!aiContent.startsWith('#')) {
+      return `# ${title}\n\n${aiContent}`
+    }
+    
+    return aiContent
+    
+  } catch (error) {
+    logger.debug(`AI generation failed: ${error instanceof Error ? error.message : String(error)}`)
+    
+    // Fallback to enhanced template with project context
+    const config = await loadConfig(root).catch(() => null)
+    const analysis = await analyzeRepo(root).catch(() => null)
+    const language = config?.project?.language ?? analysis?.language ?? 'typescript'
+    const testRunner = analysis?.testRunner ?? 'jest'
+    
+    return `# ${title}
+
+## Goals
+- Implement ${title} feature
+- Maintain code quality and consistency
+- Ensure comprehensive test coverage
+
+## Constraints
+- Language: ${language}
+- Test Runner: ${testRunner}
+- Follow existing project patterns and conventions
+- Maintain backward compatibility
+
+## Acceptance Criteria
+- [ ] Feature implementation is complete and functional
+- [ ] All edge cases are handled appropriately  
+- [ ] Unit tests achieve >90% coverage
+- [ ] Integration tests verify end-to-end functionality
+- [ ] Documentation is updated
+- [ ] No breaking changes to existing API
+
+## Test Plan
+- Unit tests for core functionality
+- Integration tests for user workflows
+- Error handling and edge case validation
+- Performance testing if applicable
+- Security testing for sensitive operations
+
+`
+  }
 }
 
 export async function runWorkflow(name: string, cfg: CodeOSConfig, cwd?: string, provider?: { name: string }): Promise<void> {
@@ -172,7 +285,7 @@ export async function runWorkflow(name: string, cfg: CodeOSConfig, cwd?: string,
   }
 }
 
-export async function selectProvider(cfg: CodeOSConfig): Promise<{ name: string, generate: (msgs: any[], opts?: any)=>Promise<{text:string}> } | undefined> {
+export async function selectWorkflowProvider(cfg: CodeOSConfig): Promise<{ name: string, generate: (msgs: any[], opts?: any)=>Promise<{text:string}> } | undefined> {
   const llm = cfg.providers?.llm ?? 'openai'
   if (llm === 'openai') {
     const { OpenAIDriver } = await import('codeos-providers')

@@ -3,7 +3,7 @@ import { Command } from 'commander';
 import { config as dotenvConfig } from 'dotenv'
 import path from 'node:path'
 import { loadConfig, analyzeRepo, writeAnalyzeReport } from 'codeos-core';
-import { initProject, runWorkflow, createBlueprint, setLogLevel, logger, findProjectRoot, selectProvider, resumeWorkflow, listWorkflowRuns, retryWorkflowFromStep, inspectWorkflowRun, createPullRequest, checkGitHubSetup, authLogin, authLogout, authStatus } from '../index.js';
+import { initProject, runWorkflow, createBlueprint, setLogLevel, logger, findProjectRoot, selectWorkflowProvider, resumeWorkflow, listWorkflowRuns, retryWorkflowFromStep, inspectWorkflowRun, createPullRequest, checkGitHubSetup, authLogin, authLogout, authStatus } from '../index.js';
 
 const program = new Command();
 program
@@ -25,10 +25,16 @@ program.command('init').description('Initialize CodeOS in the current repo').act
 
 program.command('blueprint').description('Create a new blueprint')
   .argument('<title...>', 'Title for the blueprint')
-  .action(async (title) => {
+  .option('--no-ai', 'Skip AI auto-fill (create empty template)')
+  .option('--provider <provider>', 'LLM provider for AI generation (claude|openai)')
+  .action(async (title, options) => {
     const t = Array.isArray(title) ? title.join(' ') : String(title);
-    const path = await createBlueprint(t);
+    const useAI = options.ai !== false; // Default to true unless --no-ai is specified
+    const path = await createBlueprint(t, undefined, { useAI, provider: options.provider });
     logger.info(`📝 Blueprint created at ${path}`);
+    if (useAI) {
+      logger.info(`🤖 AI auto-filled based on project context`);
+    }
   });
 
 program.command('run').description('Run a workflow')
@@ -37,7 +43,7 @@ program.command('run').description('Run a workflow')
     const root = await findProjectRoot();
     dotenvConfig({ path: path.join(root, '.env') })
     const cfg = await loadConfig(root);
-    const provider = await selectProvider(cfg)
+    const provider = await selectWorkflowProvider(cfg)
     await runWorkflow(name, cfg, root, provider);
   });
 
@@ -55,7 +61,7 @@ program.command('resume').description('Resume a failed workflow run')
     const root = await findProjectRoot();
     dotenvConfig({ path: path.join(root, '.env') })
     const cfg = await loadConfig(root);
-    const provider = await selectProvider(cfg)
+    const provider = await selectWorkflowProvider(cfg)
     await resumeWorkflow(runId, root, provider);
   });
 
@@ -72,7 +78,7 @@ program.command('retry').description('Retry workflow from a specific step')
     const root = await findProjectRoot();
     dotenvConfig({ path: path.join(root, '.env') })
     const cfg = await loadConfig(root);
-    const provider = await selectProvider(cfg)
+    const provider = await selectWorkflowProvider(cfg)
     await retryWorkflowFromStep(runId, stepIndex, root, provider);
   });
 
