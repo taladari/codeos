@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "description": "LLM providers for CodeOS AI-native development framework",
   "author": "Tal Adari <tal0392@gmail.com>",
